@@ -2,8 +2,10 @@ package com.codeniro.avouch.config;
 
 import com.codeniro.avouch.service.IdentityService;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -24,21 +26,21 @@ public class DefaultSecurityConfig {
         this.userService = userService;
     }
 
+
     @Bean
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests(authorizeRequests ->
                         authorizeRequests
-                                .mvcMatchers("/api/**").access("hasAuthority('SCOPE_message.read')")
                                 .anyRequest().authenticated()
-                ).userDetailsService(userService).formLogin(withDefaults())
-                .oauth2ResourceServer().jwt();
+                ).userDetailsService(userService)
+                .formLogin(withDefaults());
         return http.build();
     }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(11);
+        return new BCryptPasswordEncoder(BCryptPasswordEncoder.BCryptVersion.$2A);
     }
 
 }
