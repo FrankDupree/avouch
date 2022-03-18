@@ -32,9 +32,12 @@ public class DefaultSecurityConfig {
         http
                 .authorizeRequests(authorizeRequests ->
                         authorizeRequests
+                                .antMatchers("/login", "/register")
+                                .permitAll()
+                                .antMatchers("/css/**", "/js/**", "/images/**").permitAll()
                                 .anyRequest().authenticated()
                 ).userDetailsService(userService)
-                .formLogin(withDefaults());
+                .formLogin(form -> form.loginPage("/login"));
         return http.build();
     }
 
