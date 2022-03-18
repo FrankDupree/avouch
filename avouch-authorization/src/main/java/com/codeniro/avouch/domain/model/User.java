@@ -24,6 +24,7 @@ public class User {
     private String phoneNumber;
     private String password;
     private boolean emailVerified = false;
+    private boolean twoFactorEnabled = false;
     private boolean userNameSet = false;
     private boolean phoneNumberVerified = false;
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
