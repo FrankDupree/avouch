@@ -4,6 +4,9 @@ const SpeedMeasurePlugin = require("speed-measure-webpack-plugin");
 const smp = new SpeedMeasurePlugin();
 const FileManagerPlugin = require("filemanager-webpack-plugin");
 
+const clientPath = "../avouch-client/src/main/resources/static/js/lib";
+const authPath = "../avouch-authorization/src/main/resources/static/js/lib/";
+console.log(path.resolve(__dirname, "js/lib"))
 module.exports = smp.wrap({
   cache: {
     type: "filesystem",
@@ -15,7 +18,7 @@ module.exports = smp.wrap({
 
   output: {
     path: path.resolve(__dirname, "js/lib"),
-    filename: "[name].js",
+    filename: `[name].js`,
   },
 
   optimization: {
@@ -79,8 +82,12 @@ module.exports = smp.wrap({
       events: {
         onEnd: {
           copy: [
-            { source: path.resolve(__dirname, "js/lib/login.js"), destination: "../../../../../avouch-authorization/src/main/resources/static/js/login.js" },
-            { source: path.resolve(__dirname, "js/lib/login.js.map"), destination: "../../../../../avouch-authorization/src/main/resources/static/js/login.js.map" },
+            { source: `js/lib/login.js`, destination: `${authPath}login.js` },
+            { source: `js/lib/login.js.map`, destination: `${authPath}login.js.map` },
+            { source: `js/lib/vendor_app.js`, destination: `${authPath}vendor_app.js` },
+            { source: `js/lib/vendor_app.js.map`, destination: `${authPath}vendor_app.js.map` },
+            { source: `js/lib/*.js`, destination: clientPath },
+            { source: `js/lib/*.map`, destination: clientPath },
           ],
         },
       },

@@ -1,10 +1,5 @@
 # Spring Boot configuration
 spring:
-  devtools:
-    restart:
-      additional-paths: static/js/**
-    livereload:
-      enabled: true
   flyway:
     out-of-order: true
   profiles:

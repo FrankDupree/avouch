@@ -4,9 +4,11 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta id="_csrf" name="_csrf" th:content="${_csrf.token}"/>
+    <meta id="_csrf_header" name="_csrf_header" th:content="${_csrf.headerName}"/>
     <link th:href="@{css/uikit.min.css}" rel="stylesheet" />
-    <script type="text/javascript" th:src="@{js/uikit.min.js}"></script>
-    <script type="text/javascript" th:src="@{js/uikit-icons.min.js}"></script>
+    <script type="text/javascript" th:src="@{js/uikit.min.js }"></script>
+    <script type="text/javascript" th:src="@{js/uikit-icons.min.js }"></script>
     <title></title>
 </head>
 <body>
@@ -61,16 +63,10 @@
 </header>
 <!--/HEADER-->
 <div>
-    <p th:if="${loginError}" class="error">Wrong user or password!!!</p>
-    <div th:if="${param.error}">
-        <div class="alert alert-danger">
-            Invalid username or password!
-        </div>
-    </div>
     <div id="app">
     </div>
 </div>
-
-<script type="text/javascript" th:src="@{/js/login.js}"></script>
+<script type="text/javascript" th:src="@{/js/lib/vendor_app.js}"></script>
+<script type="text/javascript" th:src="@{/js/lib/login.js}"></script>
 </body>
 </html>

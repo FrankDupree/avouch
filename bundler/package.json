@@ -61,6 +61,7 @@
     "react-redux": "^7.2.4",
     "react-router-dom": "^5.2.0",
     "redux-thunk": "^2.3.0",
+    "url": "^0.11.0",
     "shave": "^2.5.9",
     "yup": "^0.32.11"
   }
