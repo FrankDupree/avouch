@@ -54,6 +54,7 @@ public class AccountController {
         if(userModel.getUsername() != null){
             var userExist = userService.getUserByUsername(userModel.getUsername());
             if(userExist != null) throw new IllegalArgumentException("Username already taken");
+            newUser.setUsername(userModel.getUsername());
         }
         newUser = userService.saveUser(newUser);
         publisher.publishEvent(new RegistrationCompleteEvent(

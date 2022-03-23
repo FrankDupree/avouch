@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useQueryParams } from "hookrouter";
 import _, { debounce } from "lodash";
+import axios from 'axios';
+
 
 const Register = () => {
   const [queryParams] = useQueryParams();
@@ -9,9 +11,19 @@ const Register = () => {
     username: "",
     password: "",
     confirmPassword: "",
+    isTaken: false,
   });
 
-  const { emailOrPhone, username, password, confirmPassword } = data;
+  const headerKey = document.getElementById("_csrf_header").getAttribute("content");
+  const headerValue = document.getElementById("_csrf").getAttribute("content");
+
+  const config = {
+    headers:{
+      [headerKey]: headerValue,
+    }
+  };
+
+  const { emailOrPhone, username, password, confirmPassword, isTaken } = data;
 
   const handleChange = (e) => {
     setData((data) => ({
@@ -21,41 +33,51 @@ const Register = () => {
   };
 
   const userNameChange = (e) => {
-    debouncedSearch(e.target.value);
+    setData((data) => ({
+      ...data,
+      username: e.target.value,
+    }));
+    search(e.target.value);
   };
 
-  async function search(criteria) {
-    const response = await fetch(`/checkusername`, {
-      method: "POST",
-      headers: {
-        [document.getElementById("_csrf_header").getAttribute("content")]:
-          document.getElementById("_csrf").getAttribute("content"),
-      },
-      body: JSON.stringify({ username: criteria }),
-    });
-    const body = await response.json();
-    console.log("body.results", body.results);
-    return body.results.map((result) => result.name);
-  }
+  const search = useCallback(
+    debounce(async (query, callback) => {
+      if (query.length > 4) {
+        await fetch(`/checkusername`, {
+          method: "POST",
+          headers: {
+            [headerKey]:headerValue,
+          },
+          body: JSON.stringify({ username: query }),
+        })
+          .then((res) => res.text())
+          .then((res) => {
+            setData((data) => ({
+              ...data,
+              isTaken: res == "none",
+            }));
+          })
+          .then(callback);
+      }
+    }, 300),
+    []
+  );
 
-  const debouncedSearch = React.useRef(
-    debounce(async (criteria) => {
-      setData((data) => ({
-        ...data,
-        username: criteria,
-      }));
-      await search(criteria);
-    }, 300)
-  ).current;
-
-  useEffect(() => {
-    return () => {
-      debouncedSearch.cancel();
-    };
-  }, [debouncedSearch]);
-
-  const { error } = queryParams;
-  console.log(error);
+ const submitForm=(e)=>{
+   e.preventDefault();
+   axios.post('/register', {
+     username:username,
+     password:password,
+     confirmPassword:confirmPassword,
+     emailOrPhone:emailOrPhone
+   }, config)
+       .then(function (response) {
+         console.log(response);
+       })
+       .catch(function (error) {
+         console.log(error);
+       });
+ }
 
   return (
     <div
@@ -63,16 +85,10 @@ const Register = () => {
       data-uk-height-viewport
     >
       <div className="uk-width-large uk-padding-small">
-        {error != undefined && (
-          <div id="err" className="uk-alert-danger" data-uk-alert>
-            <a className="uk-alert-close" data-uk-close></a>
-            <p>Invalid username or password.</p>
-          </div>
-        )}
         <form className="uk-grid-small" data-uk-grid>
           <div className="uk-width-1-2@s">
             <input
-              placeholder="Email/Phone number"
+              placeholder="email/phone number"
               name="emailOrPhone"
               className="uk-input"
               type="text"
@@ -82,17 +98,20 @@ const Register = () => {
           </div>
           <div className="uk-width-1-2@s">
             <input
-              placeholder="Username"
+              placeholder="username"
               name="username"
               className="uk-input"
               type="text"
               value={username}
               onChange={userNameChange}
             />
+            {isTaken && (
+              <div className="uk-text-danger">username is already taken</div>
+            )}
           </div>
           <div className="uk-width-1-2@s">
             <input
-              placeholder="Password"
+              placeholder="password"
               name="password"
               className="uk-input"
               type="text"
@@ -119,6 +138,7 @@ const Register = () => {
             <button
               type="submit"
               className="uk-button uk-button-primary uk-width-1-1"
+              onClick={submitForm}
             >
               REGISTER
             </button>

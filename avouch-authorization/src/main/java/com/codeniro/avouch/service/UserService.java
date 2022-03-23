@@ -24,6 +24,7 @@ import java.util.UUID;
 public class UserService implements  IUserService{
     private final IUserRepository userRepository;
     private final IRoleRepository roleRepository;
+    @Autowired
     private VerificationTokenRepository verificationTokenRepository;
     private PasswordResetTokenRepository passwordResetTokenRepository;
 
