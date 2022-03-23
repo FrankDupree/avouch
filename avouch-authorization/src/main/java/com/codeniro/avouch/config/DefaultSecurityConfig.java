@@ -34,7 +34,7 @@ public class DefaultSecurityConfig {
                         authorizeRequests
                                 .antMatchers("/login", "/register")
                                 .permitAll()
-                                .antMatchers("/css/**", "/js/**", "/images/**").permitAll()
+                                .antMatchers("/css/**", "/js/**", "/images/**", "/checkusername").permitAll()
                                 .anyRequest().authenticated()
                 ).userDetailsService(userService)
                 .formLogin(form -> form.loginPage("/login"));

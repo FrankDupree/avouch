@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import ReactDOM from "react-dom";
-import Login from "../components/loginPage/Login";
+import Register from "../components/authPage/Register";
 
 
-ReactDOM.render(<Login />, document.getElementById("app"));
+ReactDOM.render(<Register />, document.getElementById("app"));

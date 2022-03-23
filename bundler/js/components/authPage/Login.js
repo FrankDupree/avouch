@@ -68,6 +68,7 @@ const Login = () => {
         </form>
         <div>
           <div className="uk-text-center">
+            <a className="uk-link-reset uk-text-small" href="/register">Register</a>/
             <a className="uk-link-reset uk-text-small">Forgot your password?</a>
           </div>
         </div>

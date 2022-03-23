@@ -36,7 +36,9 @@ public class UserService implements  IUserService{
         var role  = roleRepository.findByName("USER");
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.getRoles().add(role);
-        user.setUsername(UUID.randomUUID().toString());
+        if(user.getUsername() == null){
+            user.setUsername(UUID.randomUUID().toString());
+        }
         return  userRepository.save(user);
     }
 
@@ -59,6 +61,11 @@ public class UserService implements  IUserService{
     @Override
     public User getUserByEmail(String email) {
        return  userRepository.findByEmail(email);
+    }
+
+    @Override
+    public User getUserByUsername(String username) {
+        return userRepository.findByUsername(username);
     }
 
 

@@ -13,6 +13,7 @@ public interface IUserService {
     User getUser(String username);
     User getUserByPhone(String phoneNumber);
     User getUserByEmail(String email);
+    User getUserByUsername(String username);
 
 
 
