@@ -1,29 +1,79 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { useQueryParams } from "hookrouter";
 import _, { debounce } from "lodash";
-import axios from 'axios';
-
+import axios from "axios";
 
 const Register = () => {
-  const [queryParams] = useQueryParams();
+  const {username:un, emailOrPhone:ep} = window.message;
   const [data, setData] = useState({
-    emailOrPhone: "",
-    username: "",
+    emailOrPhone: ep ? ep :"",
+    username: un ? un : "",
     password: "",
     confirmPassword: "",
     isTaken: false,
+    errors: [],
+    globalE: [],
   });
 
-  const headerKey = document.getElementById("_csrf_header").getAttribute("content");
+  const headerKey = document
+    .getElementById("_csrf_header")
+    .getAttribute("content");
   const headerValue = document.getElementById("_csrf").getAttribute("content");
 
   const config = {
-    headers:{
+    headers: {
       [headerKey]: headerValue,
-    }
+    },
   };
 
-  const { emailOrPhone, username, password, confirmPassword, isTaken } = data;
+  const {
+    emailOrPhone,
+    username,
+    password,
+    confirmPassword,
+    isTaken,
+    errors,
+    globalE,
+  } = data;
+
+  useEffect(() => {
+    var errors = document.getElementsByClassName("fielderr");
+    var globalErrors = document.getElementsByClassName("globalerr");
+    var con = [];
+    for (var i = 0; i < errors.length; i++) {
+      var er = errors[i].innerText;
+      var payload = er.split("|");
+      var propertyName = payload[0].trim();
+      var propertyError = payload[1].trim();
+      var allErrors = propertyError.split(",");
+      var errors2 = [];
+      for (var x = 0; x < allErrors.length; x++) {
+        errors2.push(allErrors[x]);
+      }
+      var findIndex = con.findIndex((x) => x.name == propertyName);
+      if (findIndex < 0) {
+        var newData = { name: propertyName, errors: errors2 };
+        con.push(newData);
+      } else {
+        var oldError = con[findIndex];
+        oldError.errors = [...oldError.errors, ...errors2];
+        con[findIndex] = oldError;
+      }
+    }
+
+    var con1 = [];
+    for (var b = 0; b < globalErrors.length; b++) {
+      var er1 = globalErrors[b].innerText;
+      var payload1 = er1.split("|");
+      var propertyError1 = payload1[1].trim();
+      con1.push(propertyError1);
+    }
+
+    setData((data) => ({
+      ...data,
+      errors: con,
+      globalE: con1,
+    }));
+  }, []);
 
   const handleChange = (e) => {
     setData((data) => ({
@@ -40,15 +90,20 @@ const Register = () => {
     search(e.target.value);
   };
 
+  const parseName = (str) => {
+    return str.replace(/([A-Z])/g, " $1").replace(/^./, (str) => {
+      return str.toUpperCase();
+    });
+  };
+
   const search = useCallback(
     debounce(async (query, callback) => {
       if (query.length > 4) {
-        await fetch(`/checkusername`, {
+        await fetch(`/checkusername?username=` + query, {
           method: "POST",
           headers: {
-            [headerKey]:headerValue,
+            [headerKey]: headerValue,
           },
-          body: JSON.stringify({ username: query }),
         })
           .then((res) => res.text())
           .then((res) => {
@@ -63,21 +118,26 @@ const Register = () => {
     []
   );
 
- const submitForm=(e)=>{
-   e.preventDefault();
-   axios.post('/register', {
-     username:username,
-     password:password,
-     confirmPassword:confirmPassword,
-     emailOrPhone:emailOrPhone
-   }, config)
-       .then(function (response) {
-         console.log(response);
-       })
-       .catch(function (error) {
-         console.log(error);
-       });
- }
+  const submitForm = (e) => {
+    e.preventDefault();
+    axios
+      .post(
+        "/register",
+        {
+          username: username,
+          password: password,
+          confirmPassword: confirmPassword,
+          emailOrPhone: emailOrPhone,
+        },
+        config
+      )
+      .then(function (response) {
+        console.log(response);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+  };
 
   return (
     <div
@@ -85,8 +145,38 @@ const Register = () => {
       data-uk-height-viewport
     >
       <div className="uk-width-large uk-padding-small">
-        <form className="uk-grid-small" data-uk-grid>
+        {globalE.length > 0 && (
+          <div className="uk-alert-danger" data-uk-alert>
+            <a className="uk-alert-close" data-uk-close></a>
+            {globalE.map((x, i) => {
+              return <p key={i}>{x}</p>;
+            })}
+          </div>
+        )}
+        {errors.length > 0 && (
+          <div className="uk-alert-danger" data-uk-alert>
+            <a className="uk-alert-close" data-uk-close></a>
+            <dl className="uk-description-list">
+              {errors.map((x, i) => {
+                return (
+                  <React.Fragment key={i}>
+                    <dt>{parseName(x.name)}</dt>
+                    {x.errors.map((j, k) => {
+                      return <dd key={k}>{j}</dd>;
+                    })}
+                  </React.Fragment>
+                );
+              })}
+            </dl>
+          </div>
+        )}
+        <form className="uk-grid-small" method="post" data-uk-grid>
           <div className="uk-width-1-2@s">
+            <input
+              name="_csrf"
+              type="hidden"
+              value={document.getElementById("_csrf").getAttribute("content")}
+            />
             <input
               placeholder="email/phone number"
               name="emailOrPhone"
@@ -118,11 +208,6 @@ const Register = () => {
               value={password}
               onChange={handleChange}
             />
-            <input
-              name="_csrf"
-              type="hidden"
-              value={document.getElementById("_csrf").getAttribute("content")}
-            />
           </div>
           <div className="uk-width-1-2@s">
             <input
@@ -138,7 +223,6 @@ const Register = () => {
             <button
               type="submit"
               className="uk-button uk-button-primary uk-width-1-1"
-              onClick={submitForm}
             >
               REGISTER
             </button>

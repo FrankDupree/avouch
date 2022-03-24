@@ -63,24 +63,10 @@
 </header>
 <!--/HEADER-->
 <div>
-    <script th:inline="javascript">
-        /*<![CDATA[*/
-        var message = /*[[${formData}]]*/ 'default';
-        delete message.password;
-        delete  message.confirmPassword;
-        /*]]>*/
-    </script>
-    <ul th:object="${formData}" style="display: none">
-        <li th:each="e : ${#fields.detailedErrors()}" th:class="${e.global}? globalerr : fielderr">
-            <th:block th:text="${e.global}? '*' : ${e.fieldName}">The field name</th:block>|<th:block th:text="${e.message}">The error message</th:block>
-        </li>
-    </ul>
-    <div th:if="${#fields.hasErrors('${formData.*}')}">
-
+    <div id="app">
     </div>
-    <div id="app"></div>
 </div>
 <script type="text/javascript" th:src="@{/js/lib/vendor_app.js}"></script>
-<script type="text/javascript" th:src="@{/js/lib/register.js}"></script>
+<script type="text/javascript" th:src="@{/js/lib/email.js}"></script>
 </body>
 </html>
