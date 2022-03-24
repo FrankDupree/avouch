@@ -1,13 +1,16 @@
 package com.codeniro.avouch.event.listener;
 
+import com.codeniro.avouch.domain.model.Email;
 import com.codeniro.avouch.domain.model.User;
 import com.codeniro.avouch.event.RegistrationCompleteEvent;
+import com.codeniro.avouch.service.EmailService;
 import com.codeniro.avouch.service.UserService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.var;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
 
+import javax.mail.MessagingException;
 import java.util.UUID;
 
 @Component
@@ -15,8 +18,13 @@ import java.util.UUID;
 public class RegistrationCompleteEventListener implements
         ApplicationListener<RegistrationCompleteEvent> {
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
+    private final EmailService emailService;
+
+    public RegistrationCompleteEventListener(UserService userService, EmailService emailService) {
+        this.userService = userService;
+        this.emailService = emailService;
+    }
 
     @Override
     public void onApplicationEvent(RegistrationCompleteEvent event) {
@@ -30,7 +38,17 @@ public class RegistrationCompleteEventListener implements
                         + "/verifyRegistration?token="
                         + token;
 
-        //sendVerificationEmail()
+        //send verification link
+        var email = new Email();
+        email.setTemplate("emails/verify-email");
+        email.setSubject("Email verification");
+        email.setTo(user.getEmail());
+        user.setPassword(url);
+        try {
+            emailService.sendMail(user, email);
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
         log.info("Click the link to verify your account: {}",
                 url);
     }
