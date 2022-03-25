@@ -45,6 +45,11 @@ public class AccountController {
         return "account/register";
     }
 
+    @GetMapping("/email-verification")
+    public String emailVerification(Model model){
+        model.addAttribute("formData", new RegisterModel());
+        return "account/email-verification";
+    }
 
 //    @PostMapping("/register")
 //    public ResponseEntity<User> register(@RequestBody @Valid RegisterModel userModel, final HttpServletRequest request) {
@@ -103,7 +108,7 @@ public class AccountController {
         ));
 
         model.addAttribute(userModel);
-        return "email-verification";
+        return "redirect:email-verification";
     }
 
     @PostMapping("/checkusername")

@@ -63,6 +63,13 @@
 </header>
 <!--/HEADER-->
 <div>
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        var message = /*[[${formData}]]*/ 'default';
+        delete message.password;
+        delete  message.confirmPassword;
+        /*]]>*/
+    </script>
     <div id="app">
     </div>
 </div>

@@ -11,7 +11,7 @@ import java.util.Set;
 @Getter
 @Setter
 @Table(name = "users", uniqueConstraints = { @UniqueConstraint(columnNames = { "username" }),
-        @UniqueConstraint(columnNames = { "email" }), @UniqueConstraint(columnNames = { "phoneNumber" }) })
+@UniqueConstraint(columnNames = { "email" }), @UniqueConstraint(columnNames = { "phoneNumber" }) })
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

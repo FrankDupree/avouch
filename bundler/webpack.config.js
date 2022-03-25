@@ -14,6 +14,7 @@ module.exports = smp.wrap({
   entry: {
     register: ["./js/src/register.js"],
     login: ["./js/src/login.js"],
+    email: ["./js/src/email.js"],
   },
 
   output: {
@@ -84,10 +85,16 @@ module.exports = smp.wrap({
           copy: [
             { source: `js/lib/login.js`, destination: `${authPath}login.js` },
             { source: `js/lib/login.js.map`, destination: `${authPath}login.js.map` },
+
+            { source: `js/lib/email.js`, destination: `${authPath}email.js` },
+            { source: `js/lib/email.js.map`, destination: `${authPath}email.js.map` },
+
             { source: `js/lib/register.js`, destination: `${authPath}register.js` },
             { source: `js/lib/register.js.map`, destination: `${authPath}register.js.map` },
+
             { source: `js/lib/vendor_app.js`, destination: `${authPath}vendor_app.js` },
             { source: `js/lib/vendor_app.js.map`, destination: `${authPath}vendor_app.js.map` },
+            
             { source: `js/lib/*.js`, destination: clientPath },
             { source: `js/lib/*.map`, destination: clientPath },
           ],
