@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -46,8 +47,7 @@ public class AccountController {
     }
 
     @GetMapping("/email-verification")
-    public String emailVerification(Model model){
-        model.addAttribute("formData", new RegisterModel());
+    public String emailVerification(){
         return "account/email-verification";
     }
 
@@ -77,7 +77,7 @@ public class AccountController {
 //    }
 
     @PostMapping(path="/register", consumes = {MediaType.APPLICATION_FORM_URLENCODED_VALUE})
-    public String register(@Valid @ModelAttribute("formData") RegisterModel userModel, BindingResult bindingResult, final HttpServletRequest request,  Model model, Errors errors) {
+    public String register(@Valid @ModelAttribute("formData") RegisterModel userModel, BindingResult bindingResult, RedirectAttributes redirAttr, final HttpServletRequest request, Model model, Errors errors) {
         if(bindingResult.hasErrors()){
             return "account/register";
         }
@@ -107,7 +107,7 @@ public class AccountController {
                 applicationUrl(request)
         ));
 
-        model.addAttribute(userModel);
+        redirAttr.addFlashAttribute("formData", userModel);
         return "redirect:email-verification";
     }
 
